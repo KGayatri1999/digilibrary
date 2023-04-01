@@ -7,6 +7,7 @@ const app = express()
 const expressLayouts = require('express-ejs-layouts')
 const indexRouter = require("./routes/index")
 const authorRouter = require("./routes/authors")
+const methodOverride = require('method-override')
 const bookRouter = require("./routes/books")
 const bodyParser = require ("body-parser")
 
@@ -15,6 +16,7 @@ app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')
 app.set('layout','layouts/layouts')
 app.use(expressLayouts)
+app.use(methodOverride('_method'))
 app.use(express.static(__dirname + '/public'));
 const mongoose = require('mongoose')
 mongoose.connect(process.env.DATABASE_URL,{
