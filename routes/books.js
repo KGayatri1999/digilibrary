@@ -71,6 +71,7 @@ router.post('/', async (req,res)=>{
         res.redirect(`books/${newBook.id}`)
     }
     catch(error){
+        console.log(error);
         if(book.coverImageName != null){
            removeBookCover(book.coverImageName) 
         } 
@@ -167,7 +168,8 @@ async function renderFormPage(res, book, form, hasError = false){
         if(hasError){
             if(form === 'edit')
                 params.errorMessage = 'Error Updating Book'
-            else params.errorMessage = 'Error Creating Book'
+            else 
+                params.errorMessage = 'Error Creating Book'
         } 
         res.render(`books/${form}`, params)
     }
