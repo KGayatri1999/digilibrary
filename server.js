@@ -1,28 +1,63 @@
-if(process.env.NODE_ENV !== 'production'){
-    require('dotenv').config()
+console.log('NODE_ENV:', process.env.NODE_ENV);
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: require('find-config')('.env') })
 }
-
-const express = require("express")
-const app = express()
-const expressLayouts = require('express-ejs-layouts')
-const indexRouter = require("./routes/index")
-
+const expressLayouts = require("express-ejs-layouts")
+const methodOverride = require('method-override')
+const express = require("express");
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
+const MongoDBStore = require("connect-mongodb-session")(session);
+const connectDB = require("./config/db");
+const mongoURI = process.env.DATABASE_URL;
+const app = express();
+connectDB();
+//Url decode
+const bodyParser = require('body-parser')
+app.use(bodyParser.urlencoded({ limit: '5mb', extended: false }))
+//Starting session
+const store = new MongoDBStore({
+    uri: mongoURI,
+    collection: "mySessions",
+});
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: store,
+    cookie: {
+        httpOnly: true,
+        // secure: true, // Set secure flag
+        expires: false
+    }
+  })
+);
+// Remember Me 
+app.use(function(req, res, next) {
+    if (req.method == 'POST' && req.url == '/login') {
+      if (req.body.rememberme) {
+        var hour = 3600000;
+        req.session.cookie.maxAge = 14 * 24 * hour; //2 weeks
+      } else {
+        req.session.cookie.expires = false;
+      }
+    }
+    next();
+});
+app.use(cookieParser());
+app.use(methodOverride('_method'))
+const authorsRouter = require('./routes/authors')
+const userRouter = require('./routes/user')
+const booksRouter = require('./routes/books')
+const welcomeRouter = require('./routes/welcome')
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')
-app.set('layout','layouts/layouts')
 app.use(expressLayouts)
-app.use(express.static('public'))
-const mongoose = require('mongoose')
-mongoose.connect(process.env.DATABASE_URL,{
-    useNewUrlParser: true
-})
-const db = mongoose.connection
-db.on('error', error => console.error(error))
-db.once('open', () => console.log('connected to Mongoose'))
-
-
-
-app.use('/',indexRouter)
+app.set('layout', 'layouts/layout')
+app.use('/', welcomeRouter)
+app.use(express.static(__dirname + '/public'));
+app.use('/files/authors', authorsRouter)
+app.use('/user',userRouter)
+app.use('/files/books', booksRouter)
 app.listen(process.env.PORT || 3000)
-
-

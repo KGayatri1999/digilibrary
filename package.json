@@ -9,23 +9,40 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/KGayatri1999/mybrary.git"
+    "url": "git+https://github.com/vedesh2000/mybrary.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/KGayatri1999/mybrary/issues"
+    "url": "https://github.com/vedesh2000/mybrary/issues"
   },
-  "homepage": "https://github.com/KGayatri1999/mybrary#readme",
+  "homepage": "https://github.com/vedesh2000/mybrary#readme",
   "dependencies": {
-    "ejs": "^3.1.8",
+    "alert": "^5.1.4",
+    "bcrypt": "^5.1.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "config": "^3.3.9",
+    "connect-mongodb-session": "^3.1.1",
+    "cookie-parser": "^1.4.6",
+    "ejs": "^3.1.9",
     "express": "^4.18.2",
     "express-ejs-layouts": "^2.5.1",
-    "mongoose": "^7.0.0"
+    "express-session": "^1.17.3",
+    "filepond-plugin-file-encode": "^2.1.10",
+    "find-config": "^1.0.0",
+    "install": "^0.13.0",
+    "jsonwebtoken": "^9.0.0",
+    "method-override": "^3.0.0",
+    "mime": "^3.0.0",
+    "mime-types": "^2.1.35",
+    "mongoose": "^7.1.0",
+    "nodemailer": "^6.9.1",
+    "path": "^0.12.7"
   },
   "devDependencies": {
     "dotenv": "^16.0.3",
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.22"
   }
 }
