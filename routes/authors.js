@@ -7,25 +7,24 @@ const Book = require('../models/book');
 //All authors
 routes.get('/', isAuth, async (req, res) => {
     const email = req.session.email
-    const user = await User.findOne({email: email})
+    const user = await User.findOne({email})
     let searchOptions = {user : user}
-    
     const sortBy = req.query.sortBy;
     const sort = req.query.sort;
     if (req.query.name != null && req.query.name != '') {
         searchOptions.name = new RegExp(req.query.name, 'i')
     }
     try {
-        const sortOptions = {};
-        sortOptions[sortBy] = sort;
+        let sortOptions = {};
+        if(sortBy)
+            sortOptions[sortBy] = sort;
         const authors = await Author.find(searchOptions).sort(sortOptions).exec()
         res.render('authors/index',
             {
                 authors: authors,
                 searchOptions: req.query.name,
-                sort: req.query.sort,
-                sortBy:req.query.sortBy,
-                
+                sortBy: req.query.sortBy,
+                sort: req.query.sort
             })
     } catch(err) {
         console.log(err);
@@ -42,7 +41,7 @@ routes.post('/', isAuth, async (req, res) => {
     const author = new Author(
         { 
             name: req.body.name,
-            user: await User.findOne({email : email}),
+            user: await User.findOne({email}),
             createdAt: new Date(),
             lastModifiedAt: new Date(),
             lastOpenedAt: new Date(),

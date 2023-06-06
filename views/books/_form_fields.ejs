@@ -1,7 +1,7 @@
 <div class="form-row">
   <div class="form-item">
     <label>Title</label>
-    <input type="text" name="title" value="<%= book.title %>">
+    <input type="text" name="title" value="<%= book.title %>" minlength="1" maxlength="500" placeholder="1-500 charecters">
   </div>
 </div>
 <div class="form-row">
@@ -10,9 +10,9 @@
     <select name="author">
       <% authors.forEach(author=> { %>
         <% if (author.id===book.author) { %>
-          <option selected label="<%= author.name %>" value="<%= author.id %>">
+          <option class="author-row" selected label="<%= author.name %>" value="<%= author.id %>">
             <% } else { %>
-          <option label="<%= author.name %>" value="<%= author.id %>">
+          <option class="author-row" label="<%= author.name %>" value="<%= author.id %>">
         <% } %>
       <% }) %>
     </select>
@@ -52,7 +52,7 @@
 <div class="form-row">
   <div class="form-item">
     <label>Progress</label>
-    <select name="progress" id="bookProgress" required >
+    <select name="progress" required>
         <% if (book.progress==="yetToStart") { %>
           <option selected label="Yet To Start" value="yetToStart">
             <% } else { %>
@@ -70,19 +70,6 @@
         <% } %>
     </select>
   </div>
-</div>
-<div class="form-row">
-  <% if (book.type==="inProgress") { %>
-    <div class="form-item">
-      <label for="pagesCompleted">Pages Completed</label>
-      <input type="number" name="pagesCompleted" value = "<%=book.pagesCompleted%>" >
-    </div>
-  <%} else {%>
-  <div class="form-item" style="display: none;" id="pagesCompleted">
-    <label for="pagesCompleted">Pages Completed</label>
-    <input style="position: relative; width: 100%;" type="number" name="pagesCompleted">
-  </div>
-  <%}%>
 </div>
 <div class="form-row">
   <div class="form-item form-item-no-grow">
@@ -104,11 +91,10 @@
     <input type="number" name="pageCount" min="1" value="<%= book.pageCount %>">
   </div>
 </div>
-
 <div class="form-row">
   <div class="form-item">
-    <label>Description</label>
-    <textarea name="description"><%= book.description %></textarea>
+    <label>Description (upto 1500 charecters)</label>
+    <textarea name="description" maxlength="1500"><%= book.description %></textarea>
   </div>
 </div>
 
@@ -123,18 +109,4 @@
       driveUpload.style.display = "none";
     }
   });
-
-  var bookProgressElement= document.getElementById("bookProgress");
-  var pagesCompletedElement = document.getElementById("pagesCompleted");
-
-  bookProgressElement.addEventListener("change", function() {
-    if (bookProgressElement.value === "inProgress") {
-      pagesCompletedElement.style.display = "block";
-    } else {
-      pagesCompletedElement.style.display = "none";
-    }
-  });
-
-
-
 </script>

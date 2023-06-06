@@ -1,5 +1,6 @@
 const express = require("express")
 const isAuth = require("../middleware/is-auth");
+const updateRecentSearches = require('../middleware/updateRecentSearches');
 const router = express.Router()
 const Book = require("../models/book")
 const Author = require("../models/author")
@@ -9,11 +10,15 @@ const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg']
 //all authors route
 router.get('/', isAuth, async (req, res) => {
     const email = req.session.email;
-    const user = await User.find({ email: email })
+    const user = await User.findOne({ email })
+    const recentSearches = await user.recentSearches;
     let searchOptions = { user: user }
     let query = Book.find(searchOptions)
-    if (req.query.title != null && req.query.title != '')
+    if (req.query.title != null && req.query.title != ''){
         query = query.regex('title', new RegExp(req.query.title, 'i'))
+        // No need to wait here as it may happen in backend...?
+        updateRecentSearches(email, req.query.title);
+    }
     if (req.query.publishedBefore != null && req.query.publishedBefore != '')
         query = query.lte('publishDate', req.query.publishedBefore)
     if (req.query.publishedAfter != null && req.query.publishedAfter != '')
@@ -26,12 +31,16 @@ router.get('/', isAuth, async (req, res) => {
     const sortBy = req.query.sortBy;
     const sort = req.query.sort;
     try {
-        const sortOptions = {};
+        let sortOptions = {};
         sortOptions[sortBy] = sort;
         const books = await query.sort(sortOptions).exec()
         res.render('books/index', {
             books: books,
-            searchOptions: req.query
+            searchOptions: req.query,
+            sortBy: sortBy,
+            sort: sort,
+            filterToggle: req.query.filterToggle,
+            recentSearches: recentSearches
         })
     }
     catch {
@@ -111,7 +120,7 @@ router.put('/:id', isAuth, async (req, res) => {
 // delete all books
 router.delete('/deleteAll', isAuth, async (req, res) => {
     const email = req.session.email;
-    const user = await User.findOne({ email: email })
+    const user = await User.findOne({ email })
     let book
     try {
         await Book.deleteMany({ user: user })
@@ -175,7 +184,7 @@ router.post('/', isAuth, async (req, res) => {
         publishDate: publishDate,
         pageCount: req.body.pageCount,
         description: req.body.description,
-        user: await User.findOne({ email: email }),
+        user: await User.findOne({ email }),
         lastModifiedAt: new Date(),
         lastOpenedAt: new Date(),
         createdAt: new Date(),
@@ -202,7 +211,7 @@ async function renderEditPage(req, res, book, hasError = false) {
 async function renderFormPage(req, res, book, form, hasError = false) {
     const email = req.session.email
     try {
-        const user = await User.findOne({ email: email })
+        const user = await User.findOne({ email })
         const authors = await Author.find({ user: user }).sort({ name: 1 })
         const params = {
             authors: authors,

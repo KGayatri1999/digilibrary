@@ -3,42 +3,43 @@
   <div class="form-row">
     <div class="form-item">
       <label>Name</label>
-      <input type="text" id="name" name="name" value="<%= searchOptions %>">
+      <input type="text" id="name" name="name" value="<%= searchOptions %>" placeholder="Search Here">
     </div>
   </div>
   <div class="form-row">
     <div class="form-item">
       <label>Sort By</label>
       <select name="sortBy">
-        <% 	if(sortBy === "name" || sortBy === undefined) {%>
-        <option selected label="Name" value="name">
+        
+        <% if(sortBy === undefined || sortBy === "name") {%>
+          <option selected label="Name" value="name" id="sortByName">
         <%} else {%>
-          <option selected label="Name" value="name">
+          <option label="Name" value="name" id="sortByName">
         <% } %>
 
-        <% if(sortBy === "createdAt"){ %>
+        <% if(sortBy === "createdAt") {%>
           <option selected label="Created At" value="createdAt">
-        <%} else {%> 
-          <option  label="Created At" value="createdAt">
+        <%} else {%>
+          <option label="Created At" value="createdAt">
         <% } %>
 
-        <% if(sortBy === "lastModifiedAt" ){ %>
+        <% if(sortBy === 'lastModifiedAt') {%>
           <option selected label="Modified At" value="lastModifiedAt">
-        <% }else{ %>
+        <%} else {%>
           <option label="Modified At" value="lastModifiedAt">
         <% } %>
-          
-        <% if(sortBy === "lastOpenedAt" ){ %>
-        <option selected label="Opened At" value="lastOpenedAt">
-        <% }else{ %>
+
+        <% if(sortBy === 'lastOpenedAt') {%>
+          <option selected label="Opened At" value="lastOpenedAt">
+        <%} else {%>
           <option label="Opened At" value="lastOpenedAt">
         <% } %>
 
-        <% if(sortBy === "version" ){ %>
-           <option selected label="Modifications" value="version">
-        <% }else{%>
+        <% if(sortBy === 'version') {%>
+          <option selected label="Modifications" value="version">
+        <%} else {%>
           <option label="Modifications" value="version">
-        <%} %>
+        <% } %>
 
       </select>
     </div>
@@ -46,29 +47,24 @@
   <div class="form-row">
     <label>Sort Type:</label>
     <div class="form-item-no-grow">
-      
-      <% if(sort === "asc" || sort=== undefined) {%>
+      <% if(sort === undefined || sort === "asc") {%>
         <input type="radio" name="sort" value="asc" id="asc" checked> 
         <label for="asc"><i class="fas fa-arrow-up"></i></label>
-      <% }else{ %>
-        <input type="radio" name="sort" value="asc" id="asc">
+      <%} else {%>
+        <input type="radio" name="sort" value="asc" id="asc"> 
         <label for="asc"><i class="fas fa-arrow-up"></i></label>
-      <% } %>
-      
-      
-      <% if(sort ==="desc") {%>
+      <%}%>
+      <% if(sort === "desc") {%>
         <input type="radio" name="sort" value="desc" id="desc" checked>
         <label for="desc"><i class="fas fa-arrow-down"></i></label>
-      <% } else{ %>
+      <%} else {%>
         <input type="radio" name="sort" value="desc" id="desc">
         <label for="desc"><i class="fas fa-arrow-down"></i></label>
-      <% } %>
-
-      
+      <%}%>
     </div>
   </div>
   <div class="form-row form-row-end">
-    <button type="button" class="btn btn-danger" onclick="resetForm()">Reset</button>
+    <button type="submit" class="btn btn-danger" onclick="resetForm()">Reset</button>
     <button class="btn btn-primary" type="submit">Search</button>
   </div>
 </form>
@@ -87,7 +83,10 @@
 
 <script>
   function resetForm() {
-    document.getElementById("myForm").reset();
-    document.getElementById("name").value='';
-  }
+  document.getElementById("asc").checked = true;
+  document.getElementById("desc").checked = false;
+  document.getElementById("sortByName").selected = true;
+  document.getElementById("name").value = '';
+}
+
 </script>

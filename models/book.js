@@ -16,11 +16,6 @@ const bookSchema = mongoose.Schema({
         type: Number,
         required: true
     },
-    pagesCompleted:{
-        type: Number,
-        required: true,
-        default :0
-    },
     coverImage: {
         type: Buffer
     },

@@ -36,8 +36,33 @@
   margin-left: .25rem;
 }
 
-.form-item input, .form-item select, .form-item textarea {
+.form-item input, .form-item select {
   height: 2rem;
+  width: 100%;
+  padding: .25rem .5rem;
+  border-radius: .25rem;
+  border: 1px solid var(--form-input-border-color);
+  background-color: var(--form-input-background-color);
+  color: var(--color-text-light);
+  font-size: 1rem;
+  font-weight: normal;
+  font-family: 'Gotham Rounded';
+  outline: none;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.form-item input::placeholder,
+.form-item select::placeholder,
+.form-item textarea::placeholder {
+  color: var(--placeholder-color);
+}
+
+
+.form-item textarea {
+  height: 10rem;
+  resize: vertical;
+  width: 100%;
   padding: .25rem .5rem;
   border-radius: .25rem;
   border: 1px solid var(--form-input-border-color);
@@ -48,20 +73,9 @@
   font-family: 'Gotham Rounded';
   outline: none;
 }
-.form-item input::placeholder,
-.form-item select::placeholder,
-.form-item textarea::placeholder {
-  color: var(--placeholder-color);
-}
-
-
-.form-item textarea {
-  height: 100%;
-  resize: none;
-}
 
 .form-item select option {
-  background-color: black;
+  background-color: var(--color-background-dark);
 }
 
 .form-item input:focus, .form-item select:focus, .form-item textarea:focus {
