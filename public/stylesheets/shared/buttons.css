@@ -3,6 +3,11 @@
   --color-btn-primary-background-dark: hsl(var(--color-base-hue), 100%, 73%);
   --color-btn-primary-text: hsl(var(--color-base-hue), 100%, 20%);
   --color-btn-primary-text-dark: hsl(var(--color-base-hue), 100%, 10%);
+
+  --color-btn-secondary-background: hsl(calc(var(--color-base-hue) - 100), 100%, 83%);
+  --color-btn-secondary-background-dark: hsl(calc(var(--color-base-hue) - 100), 100%, 73%);
+  --color-btn-secondary-text: hsl(calc(var(--color-base-hue) - 100), 100%, 20%);
+  --color-btn-secondary-text-dark: hsl(calc(var(--color-base-hue) - 100), 100%, 10%);
   --color-btn-border: black;
   --color-btn-danger-background: hsl(var(--color-danger-hue), 100%, 83%);
   --color-btn-danger-background-dark: hsl(var(--color-danger-hue), 100%, 73%);
@@ -44,6 +49,16 @@
   background-color: var(--color-btn-primary-background-dark);
 }
 
+.btn-secondary {
+  color: var(--color-btn-secondary-text);
+  background-color: var(--color-btn-secondary-background);
+}
+
+.btn-secondary:hover {
+  color: var(--color-btn-secondary-text-dark);
+  background-color: var(--color-btn-secondary-background-dark);
+}
+
 .btn-danger {
   color: var(--color-btn-danger-text);
   background-color: var(--color-btn-danger-background);
@@ -73,7 +88,7 @@
 .profile-button {
   background: none;
   border: none;
-  margin-left: 5px;
+  margin-left: 10px;
   margin-top: 12px;
   cursor: pointer;
 }

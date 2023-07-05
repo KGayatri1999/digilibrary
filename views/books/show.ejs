@@ -13,6 +13,18 @@
     </div>
     <div>Publish Date : <%=book.publishDate.toDateString() %>
     </div>
+    <div>Book Type :
+        <% if(book.type==="book" ) { %>
+            Book
+        <% } else { %>
+            E-Book/Web
+            <%if(book.driveLink) {%>
+                <div>
+                    <a href="<%=book.driveLink%>" style="color: inherit;" target="_blank">Drive/Web Link</a>
+                </div>
+             <% } %> 
+        <%}%>
+    </div>
     <div>
         <label>Show Description</label>
         <label class="switch">
@@ -26,21 +38,8 @@
             </div>
         </div>
     </div>
-    <br/>
-    <div>Book Type :
-        <% if(book.type==="book" ) { %>
-            Book
-            <% } else { %>
-                E-Book
-                <%if(book.driveLink) {%>
-                    <div>
-                        <a href="<%=book.driveLink%>">Drive Link</a>
-                    </div>
-                    <% } %>
-                        <%}%>
-    </div>
-    <div>Chapters Count : <%=book.chaptersCount %>
-    <br/>
+    
+    <br>
     <div>Page Count : <%=book.pageCount %>
     <br/>
     <div>Progress :
@@ -75,6 +74,45 @@
     </div>
     </div>
 <div class="btn-group">
+    <form action="/files/books/<%= book.id%>/addOrRemoveFav" method="post">
+        <% if(book.isFavourite){ %>
+        <button id="showPopupButton" type="submit" class="btn btn-primary tooltip" >
+            <i class="fas fa-heart" style="color: red;"></i>
+            <span class="tooltiptext">Remove From Favourite Books</span>
+        </button>
+        <div id="popup" class="popup">
+            <p>Book removed</p>
+        </div> 
+        <% } else { %>
+        <button id="showPopupButton" type="submit" class="btn btn-primary tooltip">
+            <i class="fas fa-heart"></i>
+            <span class="tooltiptext">Add to Favourite Books</span>
+        </button> 
+        <div id="popup" class="popup">
+            <p>Book added</p>
+        </div> 
+        <% } %> 
+    </form>
+    <form action="/files/books/<%= book.id%>/addOrRemoveDailyReadBook" method="post">
+        <% if(book.isDailyBook){ %>
+            <button id="showPopupButtonDailyBook" type="submit" class="btn btn-primary tooltip" >
+                <i class="fas fa-book" style="color: rgb(248, 169, 50);"></i>
+                <span class="tooltiptext">Remove From Daily Read</span>
+            </button>
+            <div id="popupDailyBook" class="popup">
+                <p>Book removed</p>
+            </div> 
+        <% } else { %>
+            <button id="showPopupButtonDailyBook" type="submit" class="btn btn-primary tooltip">
+                <i class="fas fa-book"></i>
+                <span class="tooltiptext">Add to Daily Read</span>
+            </button>
+            <div id="popupDailyBook" class="popup">
+                <p>Book added</p>
+            </div> 
+        <% } %> 
+    </form>
+    <a class="btn btn-primary" href="/files/books/<%= book.id%>/notes">Notes</a>
     <a class="btn btn-primary" href="/files/books/<%= book.id%>/edit">Edit</a>
     <a class="btn btn-primary" href="/files/authors/<%= book.author.id%>/">View Author</a>
     <br>
@@ -124,4 +162,19 @@ function copyText() {
   // Alert the user
   alert("Text copied to clipboard: " + description);
 }
+
+document.getElementById("showPopupButton").addEventListener("click", function() {
+    var popup = document.getElementById("popup");
+    popup.style.display = "block";
+    setTimeout(function() {
+        popup.style.display = "none";
+    }, 8000);
+});
+document.getElementById("showPopupButtonDailyBook").addEventListener("click", function() {
+    var popup = document.getElementById("popupDailyBook");
+    popup.style.display = "block";
+    setTimeout(function() {
+        popup.style.display = "none";
+    }, 8000);
+});
 </script>

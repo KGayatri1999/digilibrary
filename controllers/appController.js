@@ -1,8 +1,15 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
-const Book = require("../models/book");
+const { Book } = require("../models/book");
 const sendEmail = require("./sendEmail")
 const jwt = require('jsonwebtoken');
+const { google } = require('googleapis');
+
+const oauth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  process.env.GOOGLE_REDIRECT_URI
+);
 
 function checkPassword(inputtxt){
   var paswd=  /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{7,15}$/;
@@ -12,6 +19,75 @@ function checkPassword(inputtxt){
   }
   return false;
 }
+exports.authGoogle_get = (req, res) => {
+  // Redirect the user to the Google OAuth2 authentication URL
+  const authUrl = oauth2Client.generateAuthUrl({
+    access_type: 'offline',
+    prompt: 'consent',
+    scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'],
+  });
+  res.redirect(authUrl);
+};
+
+exports.authGoogle_callback = async (req, res) => {
+  const code = req.query.code;
+
+  try {
+    // Exchange the authorization code for an access token
+    const { tokens } = await oauth2Client.getToken(code);
+    oauth2Client.setCredentials(tokens);
+
+    // Retrieve user information from the Google API
+    const oauth2 = google.oauth2({ version: 'v2', auth: oauth2Client });
+    const { data } = await oauth2.userinfo.get();
+
+    // Extract the username from the user's profile information
+    const givenName = data.given_name;
+    const familyName = data.family_name;
+    const username = `${givenName} ${familyName}`;
+
+    // Check if the user already exists in your database
+    let user = await User.findOne({ email: data.email });
+
+    if (!user) {
+      // User does not exist, create a new user in the database
+      user = new User({
+        googleId: data.id,
+        email: data.email,
+        username: username,
+        createdAt: Date.now(),
+        lastOpenedAt: Date.now(),
+        status: 'Active'
+      });
+      await user.save();
+      console.log(username + "User Created Successfully");
+    }
+
+    else if(user.password && !user.googleId){
+       // User exist, but google id is not in the database
+      user.googleId= data.id;
+      user.lastOpenedAt= Date.now()
+      if(user.status === 'Pending')
+        user.status= 'Active';
+      await user.save();
+    }
+
+    
+    req.session.isAuth = true;
+    if (!req.cookies.theme) {
+      // Set the theme cookie to "light" if it's not already set
+      res.cookie("theme", "light");
+    }
+    req.session.email = user.email;
+    // Redirect or respond with user data as needed
+    res.redirect("/files"); // Redirect to the dashboard after successful authentication
+  } catch (err) {
+    console.log(err);
+    req.session.error = "Error Creating User";
+    return res.redirect("/signup");
+  }
+};
+
 exports.landing_page = (req, res) => {
   res.render("welcome/welcome" ,{layout: false});
 };
@@ -23,18 +99,32 @@ exports.login_get = (req, res) => {
   delete req.session.error;
   const msg = req.session.msg;
   delete req.session.msg;
-  res.render("welcome/login", { layout: false ,err: error, msg: msg});
+  let isPending = false;
+  let resendEmail = ''
+  if(req.session.isPending){
+    isPending = req.session.isPending;
+    delete req.session.isPending;
+    resendEmail = req.session.email;
+    delete req.session.email;
+  }
+  res.render("welcome/login", { layout: false ,err: error, msg: msg, isPending: isPending, resendEmail: resendEmail});
 };
 exports.login_post = async (req, res) => {
   const email = req.body.email.toLowerCase();
   const password = req.body.password;
   const user = await User.findOne({ email });
+  if (password.length < 7) {
+    req.session.error = "Invalid Password";
+    return res.redirect("/login");
+  }
   if (!user) {
     req.session.error = "Invalid User";
     return res.redirect("/login");
   }
   if (user.status != "Active") {
     req.session.error = "Pending Account. Please Verify Your Email!";
+    req.session.isPending = true;
+    req.session.email = email;
     return res.redirect("/login");
   }
 
@@ -57,7 +147,7 @@ exports.login_post = async (req, res) => {
     res.redirect("/files");
   }).catch((err)=> {
     console.log(err);
-    req.session.error = "Unable to update the user opening in time, Please retry";
+    req.session.error = "Unable to Login";
     return res.redirect("/login");
   })
 };
@@ -69,14 +159,44 @@ exports.register_get = (req, res) => {
   delete req.session.error;
   res.render("welcome/signup", { layout: false , err: error });
 };
+exports.resendVerificationEmail_get = async (req, res) => {
+  // const email = req.body
+  const email = req.params.email.toLowerCase();
+  const user = await User.findOne({email});
+    if(user){
+      const subject = "Link to verify Email";
+      const mailMsg = "Please confirm your email";
+      const url = process.env.BASE_URL + "/api/auth/confirm/" + user.confirmationCode;
+      mailStatus = await sendEmail(process.env.USER_EMAIL, process.env.PASSWORD, url, user.username, user.email, subject, mailMsg);
+      }
+    //Sending Mail
+    if(mailStatus){
+      req.session.msg = "Resent Confirmation Email, Please confirm and try to Login";
+      res.redirect("/login");
+    }
+    else{
+      req.session.error = "Sorry Unable to sent email now, Please try again";
+      return res.redirect("/login");
+    }
+}
 exports.register_post = async (req, res) => {
   const { username, password, confirmpassword } = req.body;
   const email = req.body.email.toLowerCase();
   //Checking user existance
   let user = await User.findOne({ email });
   if (user) {
-    req.session.error = "User already exists use forgot password to login";
-    return res.redirect("/signup");
+    if(user.googleId && user.password) {
+      req.session.error = "User already exists with google signIn and password use any one";
+      return res.redirect("/login");
+    }
+    else if(user.googleId) {
+      req.session.error = "User already exists with google signIn";
+      return res.redirect("/login");
+    }
+    else {
+      req.session.error = "User already exists use forgot password to login";
+      return res.redirect("/login");
+    }
   }
   //Comparing entered passwords
   const passMatch = (password === confirmpassword);
@@ -250,7 +370,6 @@ exports.dashboard_get = async (req, res) => {
     res.render('index', { user: user, books: books, current: pageNumber, pages: Math.ceil(allBooks.length / pageSize) , errorMessage: error });
   }
 };
-
 exports.logout_post = (req, res) => {
   req.session.destroy((err) => {
     if (err) {
