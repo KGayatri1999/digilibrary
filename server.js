@@ -46,6 +46,7 @@ app.use(function(req, res, next) {
 });
 app.use(cookieParser());
 app.use(methodOverride('_method'))
+const publishersRouter = require('./routes/publishers')
 const authorsRouter = require('./routes/authors')
 const userRouter = require('./routes/user')
 const booksRouter = require('./routes/books')
@@ -57,6 +58,7 @@ app.set('layout', 'layouts/layout')
 app.use('/', welcomeRouter)
 app.use(express.static(__dirname + '/public'));
 app.use('/files/authors', authorsRouter)
+app.use('/files/publishers', publishersRouter)
 app.use('/user',userRouter)
 app.use('/files/books', booksRouter)
 app.listen(process.env.PORT || 3000)

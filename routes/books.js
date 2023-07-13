@@ -6,6 +6,7 @@ const updateRecentSearches = require('../middleware/updateRecentSearches');
 const router = express.Router()
 const { Chapter, Book } = require("../models/book");
 const Author = require("../models/author")
+const Publisher = require("../models/publisher")
 const User = require("../models/user");
 const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg']
 router.use(express.json());
@@ -864,8 +865,10 @@ async function renderFormPage(req, res, book, form, hasError = false) {
     try {
         const user = await User.findOne({ email })
         const authors = await Author.find({ user: user }).sort({ name: 1 })
+        const publishers = await Publisher.find({ user: user }).sort({ name: 1 })
         const params = {
             authors: authors,
+            publishers: publishers,
             book: book,
             allLanguages: allLanguages
         }
