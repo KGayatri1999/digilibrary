@@ -1,5 +1,6 @@
 @import 'shared/variables.css';
 @import 'shared/pagination.css';
+@import 'shared/sidebar.css';
 @import 'shared/tooltip.css';
 @import 'shared/dashboardCharts.css';
 @import 'shared/notes.css';
@@ -56,6 +57,13 @@ body{
   flex: auto;
   justify-content: space-between;
 }
+
+.welcome-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 .card {
   overflow: hidden;
   width: 150px;
@@ -80,8 +88,28 @@ body{
   height: 50%;
 }
 
+.card i {
+  margin: 1.5rem;
+  font-size: 4rem;
+}
+
 .card a {
   text-decoration: none; /* Remove underline */
+  color: inherit; /* Inherit color from parent */
+}
+.card p {
+  /* text-shadow:
+      0 0 4px #fff,
+      0 0 11px #fff,
+      0 0 19px #fff,
+      0 0 40px var(--color-background-dark),
+      0 0 80px var(--color-background-dark),
+      0 0 90px var(--color-background-dark),
+      0 0 100px var(--color-background-dark),
+      0 0 150px var(--color-background-dark); */
+  text-align: center;
+  font-size: large;
+  margin: 10px;
   color: inherit; /* Inherit color from parent */
 }
 
@@ -162,11 +190,12 @@ text-overflow: clip;
 /* Customize the scrollbar track */
 ::-webkit-scrollbar {
   width: 10px;
-  background-color: var(--color-text-dark);
+  background-color: var(--color-background-light);
 }
 
 /* Customize the scrollbar thumb */
 ::-webkit-scrollbar-thumb {
+  border-radius: 100px;
   background-color: var(--color-background-dark);
 }
 
@@ -183,8 +212,11 @@ text-overflow: clip;
   left: 50%;
   border-radius: 10px;
   transform: translate(-50%, -50%);
-  background-color: grey;
-  color: whitesmoke;
+  text-align: left;
+  box-shadow: 0 4px 8px 0 var(--color-text-light);
+  transition: 0.3s;
+  background-color: var(--color-background-light);
+  color: inherit; /* Inherit color from parent */
   font-size: 1.2rem;
   padding: 5px 5px 1px 1px;
   border: 1px solid var(--color-text-dark);
@@ -193,3 +225,44 @@ text-overflow: clip;
   padding: 50px;
   z-index: 9999;
 }
+
+footer .footer-left i,
+footer .footer-left p,
+footer .footer-right i,
+footer .footer-right p {
+  display: inline;
+  margin: 0;
+  text-align: center;
+}
+
+footer {
+  background-color: #89d0f4;
+  padding: 10px;
+  text-align: center; /* Align the content at the center */
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center; /* Center align the child elements horizontally */
+  align-items: center;
+}
+
+.footer-left, .footer-right {
+  display: flex;
+  align-items: center;
+}
+
+.footer-left img, .footer-right img {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+@media (max-width: 480px) {
+  .footer-content {
+    margin-left: 15%;
+    margin-right: 15%;
+    font-size: 10px; /* Adjust the font size as needed */
+    flex-wrap: nowrap; /* Prevent wrapping of content to stay in the same line */
+  }
+} 

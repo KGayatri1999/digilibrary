@@ -8,12 +8,12 @@
   <div>Modification Times : <%=publisher.version %></div>
 </div>
 <div class="btn-row">
-  <a class="btn btn-primary" href="/files/publishers/<%= publisher.id %>/edit">Edit publisher</a>
+  <a class="btn btn-primary" href="/files/publishers/<%= publisher.id %>/edit">Edit Publisher</a>
   <%- include('../partials/deleteForm' , 
                       {url: `/files/publishers/${publisher.id}` , buttonName: "Delete"}) %>
 </div>
 <% if (booksBypublisher.length > 0){ %>    
-    <h2>Books By publisher</h2>
+    <h2>Books By Publisher/Platform</h2>
     <div class="cards-container">
       <% booksBypublisher.forEach(book => { %>
         <div class="card">
