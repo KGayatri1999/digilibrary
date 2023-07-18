@@ -88,22 +88,22 @@ routes.get('/:id', isAuth, async (req, res) => {
 })
 routes.get('/:id/edit', isAuth, async (req, res) => {
     try {
-        const publisher = await publisher.findById(req.params.id)
+        const publisher = await Publisher.findById(req.params.id)
         const user = await User.findById(publisher.user)
         if(req.session.email != user.email) {
             res.redirect('/')
             return
         }
         res.render('publishers/edit', { publisher: publisher })
-    } catch {
-        res.redirect('/publishers')
+    } catch(err) {
+        console.log(err);
+        res.redirect('/files/publishers')
     }
 })
 routes.put('/:id', isAuth, async (req, res) => {
     let publisher
     try {
-        //console.log(req.url);
-        publisher = await publisher.findById(req.params.id)
+        publisher = await Publisher.findById(req.params.id)
         const user = await User.findById(publisher.user)
         if(req.session.email != user.email) {
             res.redirect('/')

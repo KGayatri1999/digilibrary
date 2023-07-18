@@ -353,7 +353,7 @@ router.get('/new', isAuth, async (req, res) => {
 //show book route
 router.get('/:id', async (req, res) => {
     try {
-        const book = await Book.findById(req.params.id).populate('author').exec()
+        const book = await Book.findById(req.params.id).populate('author').populate('publisher').exec()
         const user = await User.findById(book.user)
         if (req.session.email != user.email) {
             res.redirect('/')
@@ -617,6 +617,7 @@ router.put('/:id', isAuth, async (req, res) => {
     }
         book.title = req.body.title
         book.author = req.body.author
+        book.publisher = req.body.publisher
         book.type = req.body.type
         book.progress = req.body.progress
         book.driveLink = driveLink
@@ -753,10 +754,39 @@ router.post('/', isAuth, async (req, res) => {
         pagesCompleted = 0;
         percentageCompleted = 0;
     }
-
+    //instant creation of author and publisher
+    let author = req.body.author;
+    if(author === "other"){
+        const newAuthor = new Author(
+            { 
+                name: req.body.otherAuthor,
+                user: await User.findOne({email}),
+                createdAt: new Date(),
+                lastModifiedAt: new Date(),
+                lastOpenedAt: new Date(),
+                version: 1
+            })
+        await newAuthor.save();
+        author = newAuthor.id;
+    }
+    let publisher = req.body.publisher;
+    if(publisher === "other"){
+        const newpublisher = new Publisher(
+            { 
+                name: req.body.otherPublisher,
+                user: await User.findOne({email}),
+                createdAt: new Date(),
+                lastModifiedAt: new Date(),
+                lastOpenedAt: new Date(),
+                version: 1
+            })
+        await newpublisher.save();
+        publisher = newpublisher.id;
+    }
     const book = new Book({
         title: req.body.title,
-        author: req.body.author,
+        author: author,
+        publisher: publisher,
         type: req.body.type,
         language: req.body.language,
         pagesCompleted: pagesCompleted,

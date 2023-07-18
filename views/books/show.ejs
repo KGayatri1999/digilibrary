@@ -11,6 +11,8 @@
 <div class="dashboard-details">
     <div>Author : <%=book.author.name %>
     </div>
+    <div>Publisher/Platform : <%=book.publisher.name %>
+    </div>
     <div>Publish Date : <%=book.publishDate.toDateString() %>
     </div>
     <div>Book Type :
@@ -36,11 +38,12 @@
             <div id="description">
                 <%- book.sanitizedDescription %>
             </div>
+            <br/>
         </div>
     </div>
-    
-    <br>
     <div>Page Count : <%=book.pageCount %>
+    <br/>
+    <div>Copies : <%=book.copies %>
     <br/>
     <div>Progress :
         <% if(book.progress==="inProgress" ) { %>
@@ -72,6 +75,7 @@
             </div>
         </div>
     </div>
+    <br/>
     </div>
 <div class="btn-group">
     <form action="/files/books/<%= book.id%>/addOrRemoveFav" method="post">
@@ -115,6 +119,7 @@
     <a class="btn btn-primary" href="/files/books/<%= book.id%>/notes">Notes</a>
     <a class="btn btn-primary" href="/files/books/<%= book.id%>/edit">Edit</a>
     <a class="btn btn-primary" href="/files/authors/<%= book.author.id%>/">View Author</a>
+    <a class="btn btn-primary" href="/files/publishers/<%= book.publisher.id%>/">View Publisher</a>
     <br>
     <%- include('../partials/deleteForm' , {url: `/files/books/${book.id}` , buttonName: "Delete" }) %>
 </div>
@@ -168,13 +173,13 @@ document.getElementById("showPopupButton").addEventListener("click", function() 
     popup.style.display = "block";
     setTimeout(function() {
         popup.style.display = "none";
-    }, 8000);
+    }, 3000);
 });
 document.getElementById("showPopupButtonDailyBook").addEventListener("click", function() {
     var popup = document.getElementById("popupDailyBook");
     popup.style.display = "block";
     setTimeout(function() {
         popup.style.display = "none";
-    }, 8000);
+    }, 3000);
 });
 </script>
